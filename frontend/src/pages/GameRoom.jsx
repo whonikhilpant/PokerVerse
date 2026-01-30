@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useWebSocket } from '../context/WebSocketContext';
 import { useAuth } from '../context/AuthContext';
 import ChatBox from '../components/poker/ChatBox';
+import Controls from '../components/poker/Controls';
 
 function Card({ card, isRevealing = false }) {
     if (!card) return <div className="w-12 h-16 bg-gray-800 rounded border border-gray-600 m-1"></div>;
@@ -107,18 +108,27 @@ export default function GameRoom() {
             </div>
 
             {/* Controls */}
-            <div className="mt-8 bg-gray-900 p-4 rounded-xl border border-gray-700 flex gap-4 w-full max-w-2xl justify-center z-10">
-                {myPlayer?.is_turn ? (
-                    <>
-                        <button onClick={() => handleAction('fold')} className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded font-bold">Fold</button>
-                        <button onClick={() => handleAction('check')} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded font-bold">Check</button>
-                        <button onClick={() => handleAction('call')} className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-bold">Call</button>
-                        <button onClick={() => handleAction('raise', 100)} className="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded font-bold text-black text-center">Raise 100</button>
-                    </>
-                ) : (
-                    <div className="text-gray-400 italic">Waiting for opponents...</div>
-                )}
+            <div className="mt-8 bg-gray-900 p-4 rounded-xl border border-gray-700 flex gap-4 w-full max-w-2xl justify-center z-10 min-h-[140px]">
+                <Controls gameState={gameState} user={user} onAction={handleAction} />
             </div>
+
+            {/* Winner Overlay */}
+            {gameState?.winners?.length > 0 && (
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 animate-fade-in">
+                    <div className="text-5xl font-bold text-poker-gold mb-6 animate-bounce">
+                        {gameState.winners.length > 1 ? 'Split Pot!' : 'Winner!'}
+                    </div>
+                    <div className="text-3xl text-white mb-8 font-mono">
+                        {gameState.winners.join(', ')}
+                    </div>
+                    <button
+                        onClick={() => sendMessage('start_game')}
+                        className="bg-poker-red hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold text-xl shadow-2xl transform hover:scale-110 transition-all border-4 border-poker-gold"
+                    >
+                        Deal Next Hand
+                    </button>
+                </div>
+            )}
 
             <button onClick={() => sendMessage('start_game')} className="absolute top-4 right-4 bg-purple-600 px-4 py-2 rounded shadow">Start Game</button>
             <div className="mt-4 max-w-md">

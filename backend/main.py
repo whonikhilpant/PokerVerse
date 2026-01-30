@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from . import models, schemas, database, auth
-from .poker_engine.manager import manager
+import models, schemas, database, auth
+from poker_engine.manager import manager
 from contextlib import asynccontextmanager
 
 @asynccontextmanager
@@ -129,7 +129,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, token: str = No
     # Add player to game (connection already accepted in manager.connect, so skip that)
     game = manager.games.get(room_id)
     if game is None:
-        from .poker_engine.game import Game
+        from poker_engine.game import Game
         manager.games[room_id] = Game(room_id)
         manager.active_connections[room_id] = []
         game = manager.games[room_id]
