@@ -1,6 +1,7 @@
 from fastapi import WebSocket
 from typing import List, Dict
 from .game import Game
+from datetime import datetime
 import json
 
 class ConnectionManager:
@@ -46,7 +47,19 @@ class ConnectionManager:
         
         action = command.get("action")
         amount = command.get("amount", 0)
+
+        # Handle chat messages
+        if action == "chat":
+            message = command.get("message", "")
+            await self.broadcast(room_id, {
+                "type": "chat_message",
+                "username": username,
+                "message": message,
+                "timestamp": datetime.now().isoformat()
+            })
+            return
         
+        # Handle game actions
         if action == "start_game":
             game.start_round()
             await self.broadcast(room_id, {"type": "game_update", "state": game.get_state(), "message": "Game Started"})

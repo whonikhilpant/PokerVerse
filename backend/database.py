@@ -1,23 +1,21 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-# Use environment variable or default local postgres
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg://postgres:password@localhost/pokerverse")
+# Use environment variable or default local sqlite (Sync)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./pokerverse.db")
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+# check_same_thread=False is needed for SQLite when used with FastAPI's threadpool
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}, echo=True)
 
-# Factory for creating new database sessions
-AsyncSessionLocal = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autoflush=False,
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
 # Dependency to get DB session in endpoints
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

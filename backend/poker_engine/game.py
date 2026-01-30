@@ -167,6 +167,7 @@ class Game:
                 "chips": p.chips,
                 "bet": p.current_bet,
                 "folded": p.is_folded,
-                "is_turn": self.players[self.turn_index].username == p.username
+                "is_turn": self.players[self.turn_index].username == p.username,
+                "hand": [c.to_dict() for c in p.hand]  # ADD THIS LINE - send hole cards
             } for p in self.players]
         }
