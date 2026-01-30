@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from .card import Deck, Card
-from .hand_evaluator import HandEvaluator
+from .hand_evaluator import HandEvaluator, HandRank
 
 class Player:
     def __init__(self, username: str, chips: float):
@@ -31,7 +31,7 @@ class Game:
         self.dealer_index = 0
         self.game_stage = "PREFLOP" # PREFLOP, FLOP, TURN, RIVER, SHOWDOWN
         self.is_active = False
-        self.winners: List[str] = []
+        self.winners: List[dict] = []
 
     def add_player(self, username: str, chips: float):
         if any(p.username == username for p in self.players):
@@ -188,10 +188,18 @@ class Game:
                 
         # Split pot
         share = self.pot / len(winners)
+        self.winners = []
         for w in winners:
+            # Re-evaluate to get rank for display (optimization: store it earlier)
+            rank = HandEvaluator.evaluate(w.hand + self.community_cards)
+            rank_desc = HandRank.to_string(rank[0])
+            self.winners.append({
+                "username": w.username,
+                "hand_rank": rank_desc,
+                "chips": w.chips # Not strictly needed but helpful
+            })
             w.chips += share
             
-        self.winners = [w.username for w in winners]
         self.is_active = False
 
     def get_state(self):

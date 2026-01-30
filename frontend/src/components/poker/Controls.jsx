@@ -102,9 +102,7 @@ export default function Controls({ gameState, user, onAction }) {
                 {!canRaise && toCall < myPlayer.chips && (
                     <div className="text-center text-xs text-gray-500 mb-1">Min Raise: ${minRaise} (Pool: ${gameState.current_bet})</div>
                 )}
-                <div className="text-[10px] text-gray-600 font-mono">
-                    DEBUG: Min:{minRaise} | Max:{maxRaise} | Val:{amount} | BB:{gameState.current_bet} | Chips:{myPlayer.chips}
-                </div>
+
             </div>
         </div>
     );

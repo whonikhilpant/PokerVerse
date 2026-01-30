@@ -118,8 +118,13 @@ export default function GameRoom() {
                     <div className="text-5xl font-bold text-poker-gold mb-6 animate-bounce">
                         {gameState.winners.length > 1 ? 'Split Pot!' : 'Winner!'}
                     </div>
-                    <div className="text-3xl text-white mb-8 font-mono">
-                        {gameState.winners.join(', ')}
+                    <div className="flex flex-col gap-2 mb-8">
+                        {gameState.winners.map((w, idx) => (
+                            <div key={idx} className="text-3xl text-white font-mono text-center">
+                                <span className="font-bold">{w.username}</span>
+                                <span className="text-gray-400 text-2xl block mt-1">{w.hand_rank}</span>
+                            </div>
+                        ))}
                     </div>
                     <button
                         onClick={() => sendMessage('start_game')}

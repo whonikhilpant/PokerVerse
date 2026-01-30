@@ -13,6 +13,21 @@ class HandRank(int):
     FOUR_OF_A_KIND = 8
     STRAIGHT_FLUSH = 9
     ROYAL_FLUSH = 10
+    
+    @classmethod
+    def to_string(cls, rank):
+        return {
+            1: "High Card",
+            2: "Pair",
+            3: "Two Pair",
+            4: "Three of a Kind",
+            5: "Straight",
+            6: "Flush",
+            7: "Full House",
+            8: "Four of a Kind",
+            9: "Straight Flush",
+            10: "Royal Flush"
+        }.get(rank, "Unknown")
 
 class HandEvaluator:
     @staticmethod
