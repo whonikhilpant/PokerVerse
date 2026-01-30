@@ -6,6 +6,12 @@ import ChatBox from '../components/poker/ChatBox';
 import Controls from '../components/poker/Controls';
 
 function Card({ card, isRevealing = false }) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        // Trigger animation frame after mount
+        requestAnimationFrame(() => setMounted(true));
+    }, []);
+
     if (!card) return <div className="w-12 h-16 bg-gray-800 rounded border border-gray-600 m-1"></div>;
 
     const color = card.suit === 'Hearts' || card.suit === 'Diamonds' ? 'text-red-500' : 'text-black';
@@ -13,7 +19,7 @@ function Card({ card, isRevealing = false }) {
 
     return (
         <div
-            className={`w-12 h-16 bg-white rounded flex flex-col items-center justify-center border border-gray-400 m-1 ${color} font-bold shadow-md transition-all duration-300 ${isRevealing ? 'animate-bounce' : ''} hover:scale-110 hover:shadow-xl`}
+            className={`w-12 h-16 bg-white rounded flex flex-col items-center justify-center border border-gray-400 m-1 ${color} font-bold shadow-md transition-all duration-500 transform ${mounted ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-12 opacity-0 scale-50 rotate-12'} hover:scale-110 hover:shadow-xl hover:-translate-y-2 cursor-pointer select-none`}
         >
             <span className="text-sm">{card.rank}</span>
             <span className="text-lg">{suitIcon}</span>
@@ -71,10 +77,12 @@ export default function GameRoom() {
             <div className="w-full max-w-4xl h-[600px] bg-[#2a503d] rounded-full border-[20px] border-[#4a2c2a] relative shadow-2xl flex items-center justify-center">
 
                 {/* Pot */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <div className="text-poker-gold font-bold text-xl mb-2">POT: ${gameState?.pot || 0}</div>
-                    <div className="flex bg-black/20 p-4 rounded-lg">
-                        {gameState?.community_cards?.map((c, i) => <Card key={i} card={c} />)}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-0">
+                    <div key={gameState?.pot} className="text-poker-gold font-bold text-2xl mb-4 bg-black/60 px-4 py-1 rounded-full border border-poker-gold/30 animate-pulse shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+                        POT: ${gameState?.pot || 0}
+                    </div>
+                    <div className="flex gap-2">
+                        {gameState?.community_cards?.map((c, i) => <Card key={`${c.rank}${c.suit}${i}`} card={c} />)}
                     </div>
                 </div>
 
