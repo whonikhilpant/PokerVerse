@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -9,6 +10,8 @@ export default function Login() {
     const navigate = useNavigate();
     const [error, setError] = useState('');
 
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new URLSearchParams();
@@ -16,7 +19,7 @@ export default function Login() {
         formData.append('password', password);
 
         try {
-            const response = await fetch('http://localhost:8000/token', {
+            const response = await fetch(`${API_BASE_URL}/token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData,

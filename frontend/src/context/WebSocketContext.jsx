@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useAuth } from './AuthContext';
+import { WS_BASE_URL } from '../config';
 
 const WebSocketContext = createContext(null);
 
@@ -13,6 +14,8 @@ export const WebSocketProvider = ({ children }) => {
     // However, for simplicity, we provide a connect function.
     const wsRef = useRef(null);
 
+
+
     const connectToRoom = (roomId) => {
         if (wsRef.current) {
             wsRef.current.close();
@@ -20,7 +23,7 @@ export const WebSocketProvider = ({ children }) => {
 
         if (!token) return;
 
-        const wsUrl = `ws://localhost:8000/ws/${roomId}?token=${token}`;
+        const wsUrl = `${WS_BASE_URL}/ws/${roomId}?token=${token}`;
         const ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
